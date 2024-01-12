@@ -1,1 +1,2 @@
 # TheYFF
+Jeg lager en kolleksjon av forskjellige små-medium store prosjekter som jeg jobber med et halvår. Disse programmene kan variere fra spill, eller applikasjoner og systemer som hjelper med hverdagslige problemer slik som vær app osv. Dokumentasjon vil foregå på notion, legger snart ut en midlertidig link hvor man kan sjekke ut nettsiden. 
