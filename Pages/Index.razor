@@ -1,7 +1,98 @@
-﻿@page "/"
+﻿@page "/supertrivia"
+@inject HttpClient Http
+@using TheYFF.Shared
+@using MudBlazor 
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Home</PageTitle>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor!</MudText>
-<MudAlert Severity="Severity.Normal">You can find documentation and examples on our website here: <MudLink Href="https://mudblazor.com" Typo="Typo.body2" Color="Color.Inherit"><b>www.mudblazor.com</b></MudLink></MudAlert>
+@if (questions == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+    else
+{
+<MudPaper Height="400px" Width="100%">
+    <MudContainer MaxWidth="MaxWidth.Small">
+        <h1>@selectedQuestion.Question</h1>
+        <MudList>
+            <MudListItem>
+                <p>A: </p>
+                <MudButton @onclick="@(() => UserAnswer("A"))">@selectedQuestion.A</MudButton>
+            </MudListItem>
+            <MudListItem>
+                <p>B: </p>
+                <MudButton @onclick="@(() => UserAnswer("B"))">@selectedQuestion.B</MudButton>
+            </MudListItem>
+            <MudListItem>
+                <p>C: </p>
+                <MudButton @onclick="@(() => UserAnswer("C"))">@selectedQuestion.C</MudButton>
+            </MudListItem>
+            <MudListItem>
+                <p>D: </p>
+                <MudButton @onclick="@(() => UserAnswer("D"))">@selectedQuestion.D</MudButton>
+            </MudListItem>
+        </MudList>
+        <p>Points: @points</p>
+    </MudContainer>
+</MudPaper>
+
+@if (!string.IsNullOrEmpty(resultMessage))
+{
+        <MudAlert Severity="Severity.Info">@resultMessage</MudAlert>
+}
+}
+
+@code {
+    private Trivia[]? questions;
+    private Trivia? selectedQuestion;
+    private Random rnd = new Random();
+
+    protected override async Task OnInitializedAsync()
+    {
+        questions = await Http.GetFromJsonAsync<Trivia[]>("sample-data/questions.json");
+        LoadNewQuestion();
+    }
+
+    private void LoadNewQuestion()
+    {
+        if (questions != null && questions.Length > 0)
+        {
+            int index = rnd.Next(questions.Length);
+            selectedQuestion = questions[index];
+        }
+    }
+    public class Trivia
+    {
+        public string? Question { get; set; }
+
+        public string? A { get; set; }
+
+        public string? B { get; set; }
+
+        public string? C { get; set; }
+
+        public string? D { get; set; }
+
+        public string? Answer { get; set; }
+    }
+
+    private string resultMessage = "";
+    public int points = 0;
+
+    private void UserAnswer(string userAnswerLabel)
+    {
+        if (selectedQuestion != null && userAnswerLabel == selectedQuestion.Answer)
+        {
+            resultMessage = "Correct answer!";
+            points++;
+            LoadNewQuestion();
+
+        }
+        else
+        {
+            resultMessage = "Wrong answer. Try again!";
+            points--;
+        }
+    }
+
+    }
